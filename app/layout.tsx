@@ -1,12 +1,6 @@
-import { Button } from '@/components/ui/button';
+import MainMenu from '@/components/main-menu';
 import { cn } from '@/lib/utils';
-import {
-  ClerkProvider,
-  Show,
-  SignInButton,
-  SignUpButton,
-  UserButton,
-} from '@clerk/nextjs';
+import { ClerkProvider } from '@clerk/nextjs';
 import type { Metadata } from 'next';
 import { Figtree, Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
@@ -47,19 +41,7 @@ export default function RootLayout({
     >
       <body className='min-h-full flex flex-col'>
         <ClerkProvider>
-          <header className='flex justify-end items-center p-4 gap-4 h-16'>
-            <Show when='signed-out'>
-              <SignInButton mode='modal' />
-              <SignUpButton mode='modal'>
-                <Button size='lg' className='text-md'>
-                  Sign Up
-                </Button>
-              </SignUpButton>
-            </Show>
-            <Show when='signed-in'>
-              <UserButton />
-            </Show>
-          </header>
+          <MainMenu />
           {children}
         </ClerkProvider>
       </body>

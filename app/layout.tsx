@@ -1,4 +1,5 @@
 import MainMenu from '@/components/main-menu';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { ClerkProvider } from '@clerk/nextjs';
 import type { Metadata } from 'next';
@@ -41,8 +42,10 @@ export default function RootLayout({
     >
       <body className='min-h-full flex flex-col'>
         <ClerkProvider>
-          <MainMenu />
-          {children}
+          <TooltipProvider>
+            <MainMenu />
+            {children}
+          </TooltipProvider>
         </ClerkProvider>
       </body>
     </html>

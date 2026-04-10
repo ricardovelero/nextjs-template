@@ -138,7 +138,7 @@ export function DashboardSettingsPage({ profile }: SettingsPageProps) {
       </header>
 
       <Tabs defaultValue="profile">
-        <TabsList>
+        <TabsList variant="line">
           <TabsTrigger value="profile">Profile Settings</TabsTrigger>
           <TabsTrigger value="app">User Settings</TabsTrigger>
         </TabsList>

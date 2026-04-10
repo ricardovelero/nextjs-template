@@ -1,17 +1,39 @@
-# Next.js Template App
+# Next.js SaaS Template
 
-This repository is a starting point for building authenticated SaaS-style applications with Next.js App Router, Clerk, Prisma, and a small set of UI primitives already wired in.
+This repository is a starting point for authenticated SaaS-style apps built with Next.js App Router, Clerk, Prisma, and shadcn base components.
 
-The app is intentionally minimal. It already separates a public marketing area from a protected app area, creates local profile records for authenticated users, and provides a dashboard shell you can extend into product features.
+The template separates a public marketing surface from a protected dashboard, bootstraps a local profile for authenticated users, and already includes dashboard pages for overview, settings, and billing.
 
 ## What The App Does Today
 
-- Serves a public marketing area under `app/(marketing)` with a top navigation menu.
-- Serves a protected dashboard area under `app/(app)/dashboard`.
-- Uses Clerk for authentication and route protection.
-- Creates and syncs a local `Profile` row for each authenticated Clerk user.
-- Creates a `UserSettings` row alongside each profile for app-owned preferences.
-- Provides reusable UI building blocks for buttons, navigation menu, sidebar, sheets, inputs, tooltips, separators, and skeletons.
+- Serves a public marketing site under `app/(marketing)` with a shadcn `navigation-menu` header.
+- Serves a protected dashboard under `app/(app)/dashboard`.
+- Uses Clerk for authentication, sign-in/sign-up flows, and route protection.
+- Upserts a local Prisma `Profile` record on authenticated dashboard access.
+- Creates and maintains a related `UserSettings` record for app-owned preferences.
+- Uses shadcn `base-lyra` styling with Tailwind CSS v4 and Remix Icon.
+- Ships dashboard overview, billing, and settings screens built from shadcn source components.
+
+## Current UI Surface
+
+### Marketing
+
+- Hero-style landing page under `/`
+- Top navigation with Clerk auth actions
+- CTA buttons into the dashboard and settings
+- Card-based feature summary using shared UI primitives
+
+### Dashboard
+
+- Shared sidebar shell with dashboard, billing, and settings navigation
+- Overview page showing current profile and settings state
+- Billing placeholder page using the same card composition as the rest of the app
+- Settings page with:
+  - Profile settings
+  - User settings
+  - Theme selection
+  - Notification toggles
+  - A visible active tab state for the selected settings section
 
 ## Current Flow
 
@@ -20,42 +42,76 @@ The app is intentionally minimal. It already separates a public marketing area f
 3. When an authenticated user enters the dashboard, the app calls `ensureProfile()`.
 4. The app upserts a local Prisma `Profile` using the Clerk user ID as the stable key.
 5. Default `UserSettings` are created on first access.
+6. The dashboard reads local settings such as theme and notification preferences from Prisma-backed app data.
 
 ## Tech Stack
 
 - Next.js 16 App Router
 - React 19
-- Clerk for authentication
+- Clerk
 - Prisma with PostgreSQL
-- Base UI and shadcn-style component wrappers
+- shadcn CLI and shadcn base component source
+- Base UI primitives under the hood
 - Tailwind CSS 4
+
+## shadcn Setup
+
+Current project config:
+
+- Style: `base-lyra`
+- Base: `base`
+- Icons: `remixicon`
+- Tailwind: v4
+- Global CSS: `app/globals.css`
+
+Shared UI primitives live under `components/ui/` and are source-controlled as local files.
+
+Notable installed primitives include:
+
+- `button`
+- `card`
+- `dropdown-menu`
+- `field`
+- `input`
+- `navigation-menu`
+- `separator`
+- `sheet`
+- `sidebar`
+- `switch`
+- `tabs`
+- `toggle`
+- `toggle-group`
+- `tooltip`
 
 ## Project Structure
 
 ```text
 app/
-  (marketing)/         Public-facing layout and homepage
-  (app)/dashboard/     Protected dashboard shell
+  (marketing)/                 Public-facing landing page and layout
+  (app)/dashboard/             Protected dashboard routes
+  (auth)/                      Clerk sign-in and sign-out routes
 components/
-  main-menu.tsx        Marketing navigation with Clerk auth actions
-  ui/                  Shared UI primitives
+  main-menu.tsx                Marketing navigation with Clerk actions
+  ui/                          Shared shadcn/base UI primitives
 features/
-  dashboard/           Dashboard-specific components
+  dashboard/
+    actions/                   Server actions for settings updates
+    components/                Dashboard shell, theme, and settings UI
 lib/
-  prisma.ts            Prisma client setup
-  profile.ts           Clerk -> local profile sync helper
+  prisma.ts                    Prisma client setup
+  profile.ts                   Clerk -> local profile sync helper
 prisma/
-  schema.prisma        Database schema
-  migrations/          Prisma migrations
+  schema.prisma                Database schema
+  migrations/                  Prisma migrations
 ```
 
 ## Data Model
 
-The current template uses a simple split between identity and app data:
+The template keeps identity and app-owned data separate:
 
 - Clerk is the source of truth for authentication and identity.
-- Prisma `Profile` stores a local snapshot of user information and the app-owned relation to settings.
-- `UserSettings` is the place for product preferences such as theme, notifications, and future dashboard options.
+- Prisma `Profile` stores a local snapshot of user information.
+- `UserSettings` stores app preferences such as theme and notification toggles.
 
 Current profile fields:
 
@@ -99,24 +155,14 @@ Create and apply migrations during development:
 pnpm exec prisma migrate dev
 ```
 
-## Current State Of The Template
+## Recent Changes And Fixes
 
-Included now:
-
-- Route groups for public and authenticated areas
-- Clerk provider in the root layout
-- Dashboard route protection
-- Local user/profile bootstrap on authenticated dashboard access
-- Starter dashboard sidebar shell
-- Starter marketing navigation
-
-Still intentionally minimal:
-
-- Marketing content is placeholder content
-- Dashboard pages are mostly empty shells
-- No Clerk webhooks yet for background sync
-- No domain-specific product models yet
-- No billing, teams, or admin workflows yet
+- Reworked the marketing and dashboard surfaces to use shadcn source components instead of placeholder markup.
+- Added local `card`, `field`, `toggle`, and `toggle-group` primitives to support standard shadcn composition.
+- Refactored dashboard settings to use `Field`, `FieldSet`, `ToggleGroup`, `Switch`, and `Tabs` patterns.
+- Added a visible active state for the selected settings tab.
+- Corrected Base UI button semantics for link-rendered buttons by using `nativeButton={false}` where required.
+- Brought the dashboard sidebar and account dropdown closer to standard shadcn/base composition.
 
 ## Template Principles
 
@@ -125,13 +171,13 @@ Still intentionally minimal:
 - Use `clerkUserId` as the stable user key for local records.
 - Treat request-time profile bootstrap as a safety net, not the long-term replacement for webhooks.
 - Keep the marketing area and dashboard area separated by route groups and layout boundaries.
-- Add new product features inside `features/` and keep shared UI primitives in `components/ui/`.
-- Prefer extending `UserSettings` and related app-owned models instead of duplicating Clerk-managed user fields.
+- Prefer extending `features/` for domain features and `components/ui/` for shared primitives.
+- Follow shadcn base conventions when composing components, especially for `render`, field layouts, tabs, and option groups.
 
 ## Suggested Next Additions
 
-- Build out dashboard settings pages backed by `UserSettings`
 - Add Clerk webhooks for `user.created`, `user.updated`, and `user.deleted`
 - Add product-specific Prisma models
-- Replace placeholder marketing content with the actual template positioning
-- Add tests around auth and profile bootstrap behavior
+- Replace billing placeholder content with a real provider integration
+- Add tests around auth, profile bootstrap, and settings updates
+- Add more domain workflows on top of the current dashboard shell

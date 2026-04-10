@@ -19,7 +19,19 @@ export default async function Layout({
   return (
     <DashboardTheme theme={theme}>
       <SidebarProvider>
-        <AppSidebar />
+        <AppSidebar
+          user={{
+            email: profile.email,
+            imageUrl: profile.imageUrl,
+            name:
+              profile.displayName?.trim() ||
+              [profile.firstName, profile.lastName]
+                .filter(Boolean)
+                .join(' ')
+                .trim() ||
+              null,
+          }}
+        />
         <main>
           <SidebarTrigger />
           {children}

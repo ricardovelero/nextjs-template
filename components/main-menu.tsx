@@ -160,11 +160,19 @@ export default function MainMenu() {
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
-      <div className='flex gap-4'>
+      <div className='flex gap-4 '>
         <Show when='signed-out'>
-          <SignInButton mode='modal' />
+          <SignInButton mode='modal'>
+            <Button
+              variant='ghost'
+              size='lg'
+              className='text-md cursor-pointer'
+            >
+              Sign In
+            </Button>
+          </SignInButton>
           <SignUpButton mode='modal'>
-            <Button size='lg' className='text-md'>
+            <Button size='lg' className='text-md cursor-pointer'>
               Sign Up
             </Button>
           </SignUpButton>

@@ -174,7 +174,9 @@ export default function MainMenu() {
           </SignUpButton>
         </Show>
         <Show when='signed-in'>
-          <Button render={<Link href='/dashboard' />}>Go To Dashboard</Button>
+          <Button nativeButton={false} render={<Link href='/dashboard' />}>
+            Go To Dashboard
+          </Button>
         </Show>
       </div>
     </header>

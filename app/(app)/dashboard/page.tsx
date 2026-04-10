@@ -61,8 +61,14 @@ export default async function DashboardPage() {
             </div>
           </CardContent>
           <CardFooter className='gap-3'>
-            <Button render={<Link href='/dashboard/settings' />}>Open Settings</Button>
-            <Button variant='outline' render={<Link href='/dashboard/billing' />}>
+            <Button nativeButton={false} render={<Link href='/dashboard/settings' />}>
+              Open Settings
+            </Button>
+            <Button
+              nativeButton={false}
+              variant='outline'
+              render={<Link href='/dashboard/billing' />}
+            >
               Review Billing
             </Button>
           </CardFooter>

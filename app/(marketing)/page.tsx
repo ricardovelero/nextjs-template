@@ -31,11 +31,15 @@ export default function Home() {
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Button render={<Link href="/dashboard" />}>
+            <Button nativeButton={false} render={<Link href="/dashboard" />}>
               Open dashboard
               <RiArrowRightLine data-icon="inline-end" />
             </Button>
-            <Button variant="outline" render={<Link href="/dashboard/settings" />}>
+            <Button
+              nativeButton={false}
+              variant="outline"
+              render={<Link href="/dashboard/settings" />}
+            >
               Inspect settings
             </Button>
           </div>

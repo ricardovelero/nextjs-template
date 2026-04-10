@@ -39,7 +39,11 @@ export default function BillingPage() {
             <p>Renewal: Not configured</p>
           </CardContent>
           <CardFooter className='gap-3'>
-            <Button variant='outline' render={<Link href='/dashboard/settings' />}>
+            <Button
+              nativeButton={false}
+              variant='outline'
+              render={<Link href='/dashboard/settings' />}
+            >
               Manage Preferences
             </Button>
           </CardFooter>

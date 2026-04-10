@@ -1,7 +1,14 @@
+import { ensureProfile } from '@/lib/profile';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/features/dashboard/components/app-sidebar';
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default async function Layout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  await ensureProfile();
+
   return (
     <SidebarProvider>
       <AppSidebar />

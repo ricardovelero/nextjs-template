@@ -15,7 +15,7 @@ import {
 } from '@remixicon/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Button, buttonVariants } from './ui/button';
+import { Button } from './ui/button';
 
 const components: { title: string; href: string; description: string }[] = [
   {
@@ -81,7 +81,7 @@ function ListItem({
 
 export default function MainMenu() {
   return (
-    <header className='flex justify-between items-center p-4 gap-4 h-16'>
+    <header className='flex h-16 items-center justify-between gap-4 border-b px-4'>
       <Link href='/'>
         <Image src='/next.svg' alt='Next.js Logo' width={100} height={76} />
       </Link>
@@ -122,7 +122,7 @@ export default function MainMenu() {
           <NavigationMenuItem>
             <NavigationMenuTrigger>With Icon</NavigationMenuTrigger>
             <NavigationMenuContent>
-              <ul className='grid w-50'>
+              <ul className='grid w-50 gap-1'>
                 <li>
                   <NavigationMenuLink
                     render={
@@ -132,6 +132,8 @@ export default function MainMenu() {
                       </Link>
                     }
                   />
+                </li>
+                <li>
                   <NavigationMenuLink
                     render={
                       <Link href='#' className='flex-row items-center gap-2'>
@@ -140,6 +142,8 @@ export default function MainMenu() {
                       </Link>
                     }
                   />
+                </li>
+                <li>
                   <NavigationMenuLink
                     render={
                       <Link href='#' className='flex-row items-center gap-2'>
@@ -163,24 +167,14 @@ export default function MainMenu() {
       <div className='flex gap-4 '>
         <Show when='signed-out'>
           <SignInButton mode='modal'>
-            <Button
-              variant='ghost'
-              size='lg'
-              className='text-md cursor-pointer'
-            >
-              Sign In
-            </Button>
+            <Button variant='ghost' size='lg'>Sign In</Button>
           </SignInButton>
           <SignUpButton mode='modal'>
-            <Button size='lg' className='text-md cursor-pointer'>
-              Sign Up
-            </Button>
+            <Button size='lg'>Sign Up</Button>
           </SignUpButton>
         </Show>
         <Show when='signed-in'>
-          <Link href='/dashboard' className={buttonVariants()}>
-            Go To Dashboard
-          </Link>
+          <Button render={<Link href='/dashboard' />}>Go To Dashboard</Button>
         </Show>
       </div>
     </header>

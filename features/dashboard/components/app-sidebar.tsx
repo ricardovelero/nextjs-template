@@ -2,6 +2,7 @@
 
 import { useClerk } from '@clerk/nextjs';
 import {
+  RiBankCardLine,
   RiDashboardLine,
   RiExpandUpDownLine,
   RiFlashlightLine,
@@ -31,10 +32,12 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
   useSidebar,
 } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
@@ -69,9 +72,11 @@ export function AppSidebar({ user }: AppSidebarProps) {
           )}
         </Link>
       </SidebarHeader>
+      <SidebarSeparator />
 
       <SidebarContent>
         <SidebarGroup>
+          <SidebarGroupLabel>Workspace</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
@@ -81,6 +86,26 @@ export function AppSidebar({ user }: AppSidebarProps) {
               >
                 <RiDashboardLine />
                 <span>Dashboard</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                render={<Link href='/dashboard/billing' />}
+                isActive={pathname === '/dashboard/billing'}
+                tooltip='Billing'
+              >
+                <RiBankCardLine />
+                <span>Billing</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                render={<Link href='/dashboard/settings' />}
+                isActive={pathname === '/dashboard/settings'}
+                tooltip='Settings'
+              >
+                <RiSettings3Line />
+                <span>Settings</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
@@ -121,14 +146,14 @@ function AccountMenu({ user }: AppSidebarProps) {
                   <span className='block truncate text-xs font-medium'>
                     {fallbackName}
                   </span>
-                  <span className='block truncate text-[11px] text-sidebar-foreground/70'>
+                  <span className='block truncate text-xs text-sidebar-foreground/70'>
                     {user.email}
                   </span>
                 </span>
               ) : null}
             </span>
             {!isCollapsed ? (
-              <RiExpandUpDownLine className='ml-auto size-4 shrink-0' />
+              <RiExpandUpDownLine className='ml-auto shrink-0' />
             ) : null}
           </DropdownMenuTrigger>
 
@@ -138,17 +163,19 @@ function AccountMenu({ user }: AppSidebarProps) {
             align='end'
             sideOffset={4}
           >
-            <DropdownMenuLabel className='p-0 font-normal'>
-              <div className='flex items-center gap-3 px-2 py-1.5 text-left text-xs'>
-                <UserAvatar imageUrl={user.imageUrl} name={fallbackName} large />
-                <div className='min-w-0'>
-                  <p className='truncate text-sm font-medium'>{fallbackName}</p>
-                  <p className='truncate text-xs text-muted-foreground'>
-                    {user.email}
-                  </p>
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className='p-0 font-normal'>
+                <div className='flex items-center gap-3 px-2 py-1.5 text-left text-xs'>
+                  <UserAvatar imageUrl={user.imageUrl} name={fallbackName} large />
+                  <div className='min-w-0'>
+                    <p className='truncate text-sm font-medium'>{fallbackName}</p>
+                    <p className='truncate text-xs text-muted-foreground'>
+                      {user.email}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </DropdownMenuLabel>
+              </DropdownMenuLabel>
+            </DropdownMenuGroup>
 
             <DropdownMenuSeparator />
 
@@ -173,14 +200,16 @@ function AccountMenu({ user }: AppSidebarProps) {
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem
-              onClick={async () => {
-                await signOut({ redirectUrl: '/' });
-              }}
-            >
-              <RiLogoutBoxRLine />
-              <span>Logout</span>
-            </DropdownMenuItem>
+            <DropdownMenuGroup>
+              <DropdownMenuItem
+                onClick={async () => {
+                  await signOut({ redirectUrl: '/' });
+                }}
+              >
+                <RiLogoutBoxRLine />
+                <span>Logout</span>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
           </DropdownMenuContent>
         </SidebarMenuItem>
       </SidebarMenu>
@@ -204,7 +233,7 @@ function UserAvatar({
       {imageUrl ? <AvatarImage src={imageUrl} alt={name} /> : null}
       <AvatarFallback
         className={cn(
-          'bg-sidebar-primary text-[10px] font-semibold text-sidebar-primary-foreground',
+          'bg-sidebar-primary font-semibold text-sidebar-primary-foreground',
         )}
       >
         {name.slice(0, 2).toUpperCase()}

@@ -1,13 +1,31 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { startTransition, useState } from 'react'
+import { startTransition, useId, useState } from 'react'
 
-import { updateProfileSettings, updateUserSettings } from '@/features/dashboard/actions/settings'
 import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { updateProfileSettings, updateUserSettings } from '@/features/dashboard/actions/settings'
 
 type SettingsPageProps = {
   profile: {
@@ -41,11 +59,14 @@ const themeOptions = [
   },
 ] as const
 
+type ThemeValue = (typeof themeOptions)[number]['value']
+
 export function DashboardSettingsPage({ profile }: SettingsPageProps) {
   const router = useRouter()
+  const themeLegendId = useId()
 
   const [displayName, setDisplayName] = useState(profile.displayName ?? '')
-  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>(
+  const [theme, setTheme] = useState<ThemeValue>(
     profile.settings?.theme === 'light' ||
       profile.settings?.theme === 'dark' ||
       profile.settings?.theme === 'system'
@@ -62,6 +83,8 @@ export function DashboardSettingsPage({ profile }: SettingsPageProps) {
   const [userSettingsMessage, setUserSettingsMessage] = useState<string | null>(null)
   const [isSavingProfile, setIsSavingProfile] = useState(false)
   const [isSavingSettings, setIsSavingSettings] = useState(false)
+  const selectedTheme =
+    themeOptions.find((option) => option.value === theme) ?? themeOptions[themeOptions.length - 1]
 
   function handleProfileSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -101,11 +124,11 @@ export function DashboardSettingsPage({ profile }: SettingsPageProps) {
 
   return (
     <section className="flex flex-col gap-8 p-6 md:p-8">
-      <header className="max-w-2xl space-y-2">
+      <header className="flex max-w-2xl flex-col gap-2">
         <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
           Dashboard
         </p>
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-semibold tracking-tight">Settings</h1>
           <p className="text-sm text-muted-foreground">
             Manage your profile details and app preferences. Clerk remains the source
@@ -122,54 +145,67 @@ export function DashboardSettingsPage({ profile }: SettingsPageProps) {
 
         <TabsContent value="profile">
           <form className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]" onSubmit={handleProfileSubmit}>
-            <div className="space-y-6 border border-border bg-card p-6">
-              <div className="space-y-1">
-                <h2 className="text-lg font-semibold">Profile</h2>
-                <p className="text-sm text-muted-foreground">
+            <Card>
+              <CardHeader>
+                <CardTitle>Profile</CardTitle>
+                <CardDescription>
                   Keep app-facing profile details here. Your authentication identity is
                   still managed by Clerk.
-                </p>
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="First name" description="Synced from Clerk and shown here as read-only.">
-                  <Input value={profile.firstName ?? ''} disabled readOnly />
-                </Field>
-                <Field label="Last name" description="Synced from Clerk and shown here as read-only.">
-                  <Input value={profile.lastName ?? ''} disabled readOnly />
-                </Field>
-              </div>
-
-              <Field label="Email" description="Primary email from Clerk.">
-                <Input value={profile.email} disabled readOnly />
-              </Field>
-
-              <Field
-                label="Display name"
-                description="App-owned display name you can use across the dashboard."
-              >
-                <Input
-                  value={displayName}
-                  onChange={(event) => setDisplayName(event.target.value)}
-                  placeholder="Enter a display name"
-                />
-              </Field>
-
-              <div className="flex items-center gap-3">
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <FieldGroup className="sm:grid sm:grid-cols-2">
+                  <Field data-disabled>
+                    <FieldLabel htmlFor="first-name">First name</FieldLabel>
+                    <Input id="first-name" value={profile.firstName ?? ''} disabled readOnly />
+                    <FieldDescription>
+                      Synced from Clerk and shown here as read-only.
+                    </FieldDescription>
+                  </Field>
+                  <Field data-disabled>
+                    <FieldLabel htmlFor="last-name">Last name</FieldLabel>
+                    <Input id="last-name" value={profile.lastName ?? ''} disabled readOnly />
+                    <FieldDescription>
+                      Synced from Clerk and shown here as read-only.
+                    </FieldDescription>
+                  </Field>
+                  <Field data-disabled className="sm:col-span-2">
+                    <FieldLabel htmlFor="email-address">Email</FieldLabel>
+                    <Input id="email-address" value={profile.email} disabled readOnly />
+                    <FieldDescription>Primary email from Clerk.</FieldDescription>
+                  </Field>
+                  <Field className="sm:col-span-2">
+                    <FieldLabel htmlFor="display-name">Display name</FieldLabel>
+                    <Input
+                      id="display-name"
+                      value={displayName}
+                      onChange={(event) => setDisplayName(event.target.value)}
+                      placeholder="Enter a display name"
+                    />
+                    <FieldDescription>
+                      App-owned display name you can use across the dashboard.
+                    </FieldDescription>
+                  </Field>
+                </FieldGroup>
+              </CardContent>
+              <CardFooter className="gap-3">
                 <Button type="submit" size="lg" disabled={isSavingProfile}>
-                  {isSavingProfile ? 'Saving...' : 'Save Profile'}
+                  {isSavingProfile ? 'Saving profile...' : 'Save Profile'}
                 </Button>
                 {profileMessage ? (
                   <p className="text-xs text-muted-foreground">{profileMessage}</p>
                 ) : null}
-              </div>
-            </div>
+              </CardFooter>
+            </Card>
 
-            <aside className="space-y-4 border border-border bg-muted/30 p-6">
-              <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                Identity Boundary
-              </h3>
-              <div className="space-y-3 text-sm text-muted-foreground">
+            <Card size="sm">
+              <CardHeader>
+                <CardTitle>Identity Boundary</CardTitle>
+                <CardDescription>
+                  Decide which profile fields stay in Clerk and which ones remain product-owned.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-4 text-muted-foreground">
                 <p>
                   `firstName`, `lastName`, `email`, and avatar are Clerk-owned snapshot
                   fields in this template.
@@ -178,135 +214,118 @@ export function DashboardSettingsPage({ profile }: SettingsPageProps) {
                   `displayName` is local app data and is safe to extend with bios,
                   timezones, onboarding state, and similar product-facing profile data.
                 </p>
-              </div>
-            </aside>
+              </CardContent>
+            </Card>
           </form>
         </TabsContent>
 
         <TabsContent value="app">
           <form className="grid gap-6 xl:grid-cols-[1fr_0.9fr]" onSubmit={handleUserSettingsSubmit}>
-            <div className="space-y-6 border border-border bg-card p-6">
-              <div className="space-y-1">
-                <h2 className="text-lg font-semibold">Appearance</h2>
-                <p className="text-sm text-muted-foreground">
-                  Theme is saved to your local `UserSettings` record.
-                </p>
-              </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Appearance</CardTitle>
+                <CardDescription>
+                  Theme preferences are stored in your local `UserSettings` record.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <FieldSet>
+                  <FieldLegend id={themeLegendId} variant="label">
+                    Theme
+                  </FieldLegend>
+                  <FieldDescription>
+                    Choose how the dashboard resolves light and dark mode.
+                  </FieldDescription>
+                  <ToggleGroup
+                    aria-labelledby={themeLegendId}
+                    className="flex-wrap"
+                    spacing={2}
+                    value={[theme]}
+                    variant="outline"
+                    onValueChange={(value) => {
+                      const nextTheme = value[0]
 
-              <fieldset className="grid gap-3">
-                <legend className="text-sm font-medium">Theme</legend>
-                <div className="grid gap-3 md:grid-cols-3">
-                  {themeOptions.map((option) => {
-                    const active = theme === option.value
+                      if (
+                        nextTheme === 'light' ||
+                        nextTheme === 'dark' ||
+                        nextTheme === 'system'
+                      ) {
+                        setTheme(nextTheme)
+                      }
+                    }}
+                  >
+                    {themeOptions.map((option) => (
+                      <ToggleGroupItem key={option.value} value={option.value}>
+                        {option.label}
+                      </ToggleGroupItem>
+                    ))}
+                  </ToggleGroup>
+                  <FieldDescription>{selectedTheme.description}</FieldDescription>
+                </FieldSet>
+              </CardContent>
+            </Card>
 
-                    return (
-                      <label
-                        key={option.value}
-                        className="flex cursor-pointer flex-col gap-2 border border-border bg-background p-4 text-left transition-colors hover:bg-muted/50 has-[:checked]:border-foreground"
-                      >
-                        <input
-                          className="sr-only"
-                          type="radio"
-                          name="theme"
-                          value={option.value}
-                          checked={active}
-                          onChange={() => setTheme(option.value)}
-                        />
-                        <div className="flex items-center justify-between gap-3">
-                          <span className="text-sm font-medium">{option.label}</span>
-                          <span
-                            className={
-                              active
-                                ? 'size-2 rounded-full bg-foreground'
-                                : 'size-2 rounded-full bg-border'
-                            }
-                          />
-                        </div>
-                        <p className="text-xs leading-5 text-muted-foreground">
-                          {option.description}
-                        </p>
-                      </label>
-                    )
-                  })}
-                </div>
-              </fieldset>
-            </div>
-
-            <div className="space-y-6 border border-border bg-card p-6">
-              <div className="space-y-1">
-                <h2 className="text-lg font-semibold">Notifications</h2>
-                <p className="text-sm text-muted-foreground">
+            <Card>
+              <CardHeader>
+                <CardTitle>Notifications</CardTitle>
+                <CardDescription>
                   These switches are app-owned and stored in `UserSettings`.
-                </p>
-              </div>
-
-              <SwitchRow
-                title="Marketing emails"
-                description="Product announcements, launches, and occasional promotional updates."
-                checked={marketingEmails}
-                onCheckedChange={setMarketingEmails}
-              />
-              <SwitchRow
-                title="Product emails"
-                description="Important product updates, release notes, and account-related notices."
-                checked={productEmails}
-                onCheckedChange={setProductEmails}
-              />
-
-              <div className="flex items-center gap-3">
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <FieldSet>
+                  <FieldLegend variant="label">Email preferences</FieldLegend>
+                  <FieldDescription>
+                    Choose which product updates should reach your inbox.
+                  </FieldDescription>
+                  <FieldGroup className="gap-4">
+                    <Field
+                      orientation="horizontal"
+                      className="items-start rounded-none border border-border p-4"
+                    >
+                      <FieldContent className="gap-1 pr-6">
+                        <FieldLabel htmlFor="marketing-emails">Marketing emails</FieldLabel>
+                        <FieldDescription>
+                          Product announcements, launches, and occasional promotional updates.
+                        </FieldDescription>
+                      </FieldContent>
+                      <Switch
+                        id="marketing-emails"
+                        checked={marketingEmails}
+                        onCheckedChange={setMarketingEmails}
+                      />
+                    </Field>
+                    <Field
+                      orientation="horizontal"
+                      className="items-start rounded-none border border-border p-4"
+                    >
+                      <FieldContent className="gap-1 pr-6">
+                        <FieldLabel htmlFor="product-emails">Product emails</FieldLabel>
+                        <FieldDescription>
+                          Important product updates, release notes, and account-related notices.
+                        </FieldDescription>
+                      </FieldContent>
+                      <Switch
+                        id="product-emails"
+                        checked={productEmails}
+                        onCheckedChange={setProductEmails}
+                      />
+                    </Field>
+                  </FieldGroup>
+                </FieldSet>
+              </CardContent>
+              <CardFooter className="gap-3">
                 <Button type="submit" size="lg" disabled={isSavingSettings}>
-                  {isSavingSettings ? 'Saving...' : 'Save Settings'}
+                  {isSavingSettings ? 'Saving settings...' : 'Save Settings'}
                 </Button>
                 {userSettingsMessage ? (
                   <p className="text-xs text-muted-foreground">{userSettingsMessage}</p>
                 ) : null}
-              </div>
-            </div>
+              </CardFooter>
+            </Card>
           </form>
         </TabsContent>
       </Tabs>
     </section>
-  )
-}
-
-function Field({
-  label,
-  description,
-  children,
-}: {
-  label: string
-  description: string
-  children: React.ReactNode
-}) {
-  return (
-    <label className="grid gap-2">
-      <div className="space-y-1">
-        <span className="text-sm font-medium">{label}</span>
-        <p className="text-xs leading-5 text-muted-foreground">{description}</p>
-      </div>
-      {children}
-    </label>
-  )
-}
-
-function SwitchRow({
-  title,
-  description,
-  checked,
-  onCheckedChange,
-}: {
-  title: string
-  description: string
-  checked: boolean
-  onCheckedChange: (checked: boolean) => void
-}) {
-  return (
-    <div className="flex items-start justify-between gap-4 border border-border bg-background p-4">
-      <div className="space-y-1">
-        <h3 className="text-sm font-medium">{title}</h3>
-        <p className="text-xs leading-5 text-muted-foreground">{description}</p>
-      </div>
-      <Switch checked={checked} onCheckedChange={onCheckedChange} />
-    </div>
   )
 }

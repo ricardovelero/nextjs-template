@@ -1,5 +1,6 @@
 import { ensureProfile } from '@/lib/profile';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { Separator } from '@/components/ui/separator';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/features/dashboard/components/app-sidebar';
 import { DashboardTheme } from '@/features/dashboard/components/dashboard-theme';
 
@@ -32,10 +33,14 @@ export default async function Layout({
               null,
           }}
         />
-        <main>
-          <SidebarTrigger />
+        <SidebarInset>
+          <header className='flex h-12 items-center gap-3 border-b px-4'>
+            <SidebarTrigger />
+            <Separator orientation='vertical' className='h-4' />
+            <p className='text-xs text-muted-foreground'>Workspace</p>
+          </header>
           {children}
-        </main>
+        </SidebarInset>
       </SidebarProvider>
     </DashboardTheme>
   );

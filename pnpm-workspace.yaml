@@ -3,4 +3,6 @@ ignoredBuiltDependencies:
   - unrs-resolver
 onlyBuiltDependencies:
   - '@clerk/shared'
+  - '@prisma/engines'
   - msw
+  - prisma
